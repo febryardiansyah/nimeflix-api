@@ -9,7 +9,7 @@ const mongoose = require('mongoose')
 
 app.use(cors())
 
-mongoose.connect('your-db-url',{
+mongoose.connect('mongodb+srv://febryar:karangturi123@cluster0.6pime.mongodb.net/nimeflix?retryWrites=true&w=majority',{
     useNewUrlParser:true,useUnifiedTopology:true,useFindAndModify:false,useCreateIndex:true
 }).then(()=>console.log('connected to database'))
 .catch(err => console.log(err))

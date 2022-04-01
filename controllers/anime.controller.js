@@ -89,9 +89,8 @@ exports.detailAnime = async (req, res) => {
         .find("span > a")
         .each(function () {
           genre_name = $(this).text();
-          genre_id = $(this)
-            .attr("href")
-            .replace(`https://otakudesu.moe/genres/`, "");
+          genre_id = $(this).attr("href")
+            .replace(`${baseUrl}genres/`, "");
           genre_link = $(this).attr("href");
           genreList.push({ genre_name, genre_id, genre_link });
           object.genre_list = genreList;
@@ -105,7 +104,7 @@ exports.detailAnime = async (req, res) => {
           id: $(element)
             .find("span > a")
             .attr("href")
-            .replace('https://otakudesu.moe/', ""),
+            .replace(`${baseUrl}`, ""),
           link: $(element).find("span > a").attr("href"),
           uploaded_on: $(element).find(".zeebr").text(),
         };
@@ -128,7 +127,7 @@ exports.detailAnime = async (req, res) => {
         $("div.venser > div:nth-child(6) > ul").text().length !== 0
           ? $("div.venser > div:nth-child(6) > ul > li > span:nth-child(1) > a")
               .attr("href")
-              .replace(`https://otakudesu.moe/batch/`, "")
+              .replace(`${baseUrl}batch/`, "")
           : "Masih kosong gan",
       link:
         $("div.venser > div:nth-child(6) > ul").text().length !== 0
@@ -181,6 +180,13 @@ exports.epsAnime = async (req, res) => {
     obj.title = $(".venutama > h1").text();
     obj.baseUrl = fullUrl;
     obj.id = fullUrl.replace(url.baseUrl, "");
+    const isFirstEps = id.split('-')[2] === '1';
+    obj.isFirstEps = isFirstEps;
+    const prev = $('#venkonten > div.venser > div.venutama > div.prevnext > div.flir > a:nth-child(1)');
+    const next = $('#venkonten > div.venser > div.venutama > div.prevnext > div.flir > a:nth-child(3)').attr('href');
+    const next2 = $('#venkonten > div.venser > div.venutama > div.prevnext > div.flir > a:nth-child(2)').attr('href');
+    obj.prev = prev == null?'':prev.text() === 'See All Episodes'?'':prev.attr('href').replace(`${baseUrl}`,'');
+    obj.next = isFirstEps?next2.replace(`${baseUrl}`,''):next == null?'':next.replace(`${baseUrl}`,'');
     const streamLink = streamElement.find("iframe").attr("src");
     // const streamLinkResponse = await Axios.get(streamLink)
     // const stream$ = cheerio.load(streamLinkResponse.data)
