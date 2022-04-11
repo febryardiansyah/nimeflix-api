@@ -182,19 +182,28 @@ exports.epsAnime = async (req, res) => {
     obj.id = fullUrl.replace(url.baseUrl, "");
     const isFirstEps = id.split('-')[2] === '1';
     obj.isFirstEps = isFirstEps;
-    const prev = $('#venkonten > div.venser > div.venutama > div.prevnext > div.flir > a:nth-child(1)');
-    const next = $('#venkonten > div.venser > div.venutama > div.prevnext > div.flir > a:nth-child(3)').attr('href');
-    const next2 = $('#venkonten > div.venser > div.venutama > div.prevnext > div.flir > a:nth-child(2)').attr('href');
-    obj.prev = prev == null?'':prev.text() === 'See All Episodes'?'':prev.attr('href').replace(`${baseUrl}`,'');
-    obj.next = isFirstEps?next2.replace(`${baseUrl}`,''):next == null?'':next.replace(`${baseUrl}`,'');
+    let nextList = [];
+    $('#venkonten > div.venser > div.venutama > div.prevnext > div.flir > a').each((idx,el)=>{
+      nextList.push({
+        title:$(el).text().trim(),
+        id:$(el).attr('href').replace(`${baseUrl}`,'')
+      })
+    })
+    console.log(nextList);
+    obj.prev = nextList.map((e)=>{
+      if (e.title === 'Previous Eps.') {
+        return e.id;
+      }
+      return '';
+    }).filter(item => item)[0] || '';
+    obj.next = nextList.map((e)=>{
+      console.log(e.title);
+      if (e.title === 'Next Eps.') {
+        return e.id;
+      }
+      return '';
+    }).filter(item =>item)[0] || '';
     const streamLink = streamElement.find("iframe").attr("src");
-    // const streamLinkResponse = await Axios.get(streamLink)
-    // const stream$ = cheerio.load(streamLinkResponse.data)
-    // const sl = stream$('body').find('script').html().search('sources')
-    // const endIndex = stream$('body').find('script').eq(0).html().indexOf('}]',sl)
-    // const val = stream$('body').find('script').eq(0).html().substr(sl,endIndex - sl+1).replace(`sources: [{'file':'`,'')
-    // console.log(val);
-    // console.log(val.replace(`','type':'video/mp4'}`,''));
     obj.link_stream = await episodeHelper.get(streamLink);
     obj.alternate_stream = await episodeHelper.getAlternateStream(streamLink);
     console.log($('#pembed > div > iframe').attr('src'));
