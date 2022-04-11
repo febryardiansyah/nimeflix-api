@@ -196,6 +196,7 @@ exports.epsAnime = async (req, res) => {
     // console.log(val);
     // console.log(val.replace(`','type':'video/mp4'}`,''));
     obj.link_stream = await episodeHelper.get(streamLink);
+    obj.alternate_stream = await episodeHelper.getAlternateStream(streamLink);
     console.log($('#pembed > div > iframe').attr('src'));
     let low_quality;
     let medium_quality;
