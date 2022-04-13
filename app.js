@@ -6,8 +6,6 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
 const mongoose = require('mongoose')
-const cheerio = require('cheerio');
-const { default: axios } = require('axios')
 
 app.use(cors())
 
@@ -19,18 +17,6 @@ mongoose.connect('mongodb+srv://febryar:karangturi123@cluster0.6pime.mongodb.net
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(fileUpload({createParentPath:true}))
-
-// test
-app.use('/test',async(req,res)=>{
-    try {
-        const response = await axios.get('https://www.blogger.com/video.g?token=AD6v5dycAKMZ3iAxzn6UDTFIm6c_l6Pywh-iZ4_Whn8CJlEzXO7ENH83hqcobF0p1N6sDBd9vzVMwuxOLr7mrS_Ew1ndNDiSQJu724XLKKFo8xA5gCNBWUqY5NMX_T31aXYJptXUWPQw');
-        const $ = cheerio.load(response.data);
-        console.log($.html());
-        res.send('hellow')
-    } catch (error) {
-        res.send(error);
-    }
-})
 
 app.use('/api',router)
 app.use('/',(req,res)=>{
