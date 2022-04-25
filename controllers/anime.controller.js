@@ -109,20 +109,19 @@ exports.detailAnime = async (req, res) => {
           object.genre_list = genreList;
         });
     });
-    const idSourceStart = $.html().search(',id: ');
-    const idSourceEnd = $.html().indexOf("},method: 'GET'");
-    console.log(`ID => ${idSourceStart}`);
-    console.log(`ID => ${idSourceEnd}`);
-    const animeId = $.html().substring(idSourceStart+5,idSourceEnd).trim();
+    // const idSourceStart = $.html().search(',id: ');
+    // const idSourceEnd = $.html().indexOf("},method: 'GET'");
+    // console.log(`ID => ${idSourceStart}`);
+    // console.log(`ID => ${idSourceEnd}`);
+    // const animeId = $.html().substring(idSourceStart+5,idSourceEnd).trim();
 
-    const epsListRes = await Axios.get('https://otakudesu.site/wp-admin/admin-ajax.php',{
-      params:{
-        action:'epslist','id':animeId,
-      }
-    })
-    // console.log(epsListRes.data);
-    const $eps = cheerio.load(epsListRes.data);
-    $eps("li").each((i, element) => {
+    // const epsListRes = await Axios.get('https://otakudesu.site/wp-admin/admin-ajax.php',{
+    //   params:{
+    //     action:'epslist','id':animeId,
+    //   }
+    // })
+    // const $eps = cheerio.load(epsListRes.data);
+    $("#venkonten > div.venser > div:nth-child(8) > ul > li").each((i, element) => {
         const dataList = {
           title: $(element).find("span > a").text().trim(),
           id: $(element)
