@@ -127,7 +127,7 @@ exports.detailAnime = async (req, res) => {
           id: $(element)
             .find("span > a")
             .attr("href")
-            .replace(`${baseUrl}`, "").trim(),
+            .replace(`${baseUrl}episode/`, "").trim(),
           link: $(element).find("span > a").attr("href"),
           uploaded_on: $(element).find(".zeebr").text().trim(),
         };
@@ -193,7 +193,7 @@ exports.batchAnime = async (req, res) => {
 };
 exports.epsAnime = async (req, res) => {
   const id = req.params.id;
-  const fullUrl = `${url.baseUrl}${id}`;
+  const fullUrl = `${url.baseUrl}episode/${id}`;
   try {
     const response = await Axios.get(fullUrl);
     const $ = cheerio.load(response.data);
@@ -208,7 +208,7 @@ exports.epsAnime = async (req, res) => {
     $('#venkonten > div.venser > div.venutama > div.prevnext > div.flir > a').each((idx,el)=>{
       nextList.push({
         title:$(el).text().trim(),
-        id:$(el).attr('href').replace(`${baseUrl}`,'')
+        id:$(el).attr('href').replace(`${baseUrl}episode/`,'')
       })
     })
     console.log(nextList);
@@ -299,7 +299,7 @@ exports.epsMirror = async (req, res) => {
 
 function _batchQualityFunction(num, res) {
   const $ = cheerio.load(res);
-  const element = $(".download").find(".batchlink");
+  const element = $(".download2").find(".batchlink");
   const download_links = [];
   let response;
   element.find("ul").filter(function () {
