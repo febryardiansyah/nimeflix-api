@@ -7,8 +7,8 @@ const get = async (url) => {
     let source1 = $.html().search('"file":');
     let source2 = $.html().search("'file':");
     const source3Url = $('#mediaplayer').attr('src');
-    console.log(source1);
-    console.log(source2);
+    console.log(`source 1 ${source1}`);
+    console.log(`source 2 ${source2}`);
     
     if (source1 !== -1) {
       const end = $.html().indexOf('","');
