@@ -137,7 +137,8 @@ exports.completeAnimeList = (req, res) => {
 };
 exports.onGoingAnimeList = (req, res) => {
   const params = req.params.page;
-  const page = typeof params === "undefined" ? "" : params === "1" ? "" : `page/${params}`;
+  const page =
+    typeof params === "undefined" ? "" : params === "1" ? "" : `page/${params}`;
   const fullUrl = `${baseUrl}${onGoingAnime}${page}`;
   // const url = `${baseUrl}${onGoingAnime}`;
   // console.log(url);
@@ -216,10 +217,10 @@ exports.genre = (req, res) => {
       let genreList = [];
       element.find("li > a").each(function (i, el) {
         let object = {};
-        object.genre_name = $(el).text();
+        object.title = $(el).text();
         object.id = $(el).attr("href").replace("/genres/", "");
         object.link = baseUrl + $(el).attr("href");
-        object.image_link = ImageList[i];
+        object.img = ImageList[i];
         genreList.push(object);
       });
       res.json({ genreList });
@@ -240,11 +241,10 @@ exports.animeByGenre = (req, res) => {
       let animeList = [];
       let genreList = [];
       let object = {};
-      let genre_name, genre_link, genre_id;
       element.find(".col-md-4").each(function () {
         object = {};
-        object.anime_name = $(this).find(".col-anime-title").text();
-        object.thumb = $(this).find('div.col-anime-cover > img').attr('src')
+        object.title = $(this).find(".col-anime-title").text();
+        object.thumb = $(this).find("div.col-anime-cover > img").attr("src");
         object.link = $(this).find(".col-anime-title > a").attr("href");
         object.id = $(this)
           .find(".col-anime-title > a")
@@ -258,12 +258,12 @@ exports.animeByGenre = (req, res) => {
         $(this)
           .find(".col-anime-genre > a")
           .each(function () {
-            genre_name = $(this).text();
-            genre_link = $(this).attr("href");
-            genre_id = genre_link.replace(`${baseUrl}genres/`, "");
-            genreList.push({ genre_name, genre_link, genre_id });
-            object.genre_list = genreList;
+            const title = $(this).text();
+            const link = $(this).attr("href");
+            const id = link.replace(`${baseUrl}genres/`, "");
+            genreList.push({ title, link, id });
           });
+        object.genre_list = genreList;
         animeList.push(object);
       });
       res.send({
@@ -285,16 +285,20 @@ exports.search = (req, res) => {
     let obj = {};
     let anime_list = [];
     (obj.status = "success"), (obj.baseUrl = fullUrl);
-    if(element.find("ul > li").length === 0){
+    if (element.find("ul > li").length === 0) {
       obj.search_results = [];
-    }else {
+    } else {
       element.find("ul > li").each(function () {
         const genre_list = [];
-        $(this).find(".set").find("a").each(function () {
+        $(this)
+          .find(".set")
+          .find("a")
+          .each(function (i, el) {
             const genre_result = {
-              genre_title: $(this).text(),
-              genre_link: $(this).attr("href"),
-              genre_id: $(this).attr("href").replace(`${baseUrl}genres/`, ""),
+              id: $(this).attr("href").replace(`${baseUrl}genres/`, ""),
+              title: $(this).text(),
+              link: $(this).attr("href"),
+              img: ImageList[i],
             };
             genre_list.push(genre_result);
           });
@@ -302,7 +306,10 @@ exports.search = (req, res) => {
           thumb: $(this).find("img").attr("src"),
           title: $(this).find("h2").text(),
           link: $(this).find("h2 > a").attr("href"),
-          id: $(this).find("h2 > a").attr("href").replace(`${baseUrl}anime/`, ""),
+          id: $(this)
+            .find("h2 > a")
+            .attr("href")
+            .replace(`${baseUrl}anime/`, ""),
           status: $(this).find(".set").eq(1).text().replace("Status : ", ""),
           score: parseFloat(
             $(this).find(".set").eq(2).text().replace("Rating : ", "")

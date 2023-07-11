@@ -2,7 +2,6 @@ const express = require('express')
 const router  = express.Router()
 const MainController = require('../controllers/main.controller')
 const AnimeController = require('../controllers/anime.controller')
-const MessagingController = require('../controllers/messaging.controller')
 
 router.get('/home', MainController.home)
 router.get('/complete',MainController.completeAnimeList)
@@ -17,8 +16,5 @@ router.get('/anime/:id',AnimeController.detailAnime)
 router.get('/batch/:id',AnimeController.batchAnime)
 router.get('/eps/:id',AnimeController.epsAnime)
 router.post('/eps/:animeId/mirror/',AnimeController.epsMirror)
-
-router.post('/notification',MessagingController.postNotification)
-router.get('/notification',MessagingController.getNotification)
 
 module.exports = router
