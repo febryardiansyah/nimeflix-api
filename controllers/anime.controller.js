@@ -339,7 +339,7 @@ function _epsQualityFunction(num, res) {
   const download_links = [];
   let response;
 
-  element.find("ul").filter(function () {
+  element.find("ul:nth-child(2)").filter(function () {
     const quality = $(this).find("li").eq(num).find("strong").text();
     const size = $(this).find("li").eq(num).find("i").text();
     $(this)
