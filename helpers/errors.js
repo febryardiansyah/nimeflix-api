@@ -1,14 +1,11 @@
-const on404 = (req,res)=>{
-    res.status(404)
-    .json({
-        status:'not found path',
-        animeList:[]
-    })
-}
-const requestFailed = (req,res,err)=>{
-    res.status(502).send({
-        'status':false,
-        'message':err.message
-    })
-}
-module.exports = {on404,requestFailed}
+const response = require("./response");
+
+const on404 = (req, res) => {
+  response.error(res, "Resource not found", 404);
+};
+
+const requestFailed = (req, res, err) => {
+  response.error(res, err?.message || "Request failed", 502);
+};
+
+module.exports = { on404, requestFailed };

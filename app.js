@@ -19,24 +19,31 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.use(fileUpload({createParentPath:true}))
 
 app.use('/api',router)
-app.use('/',(req,res)=>{
-    res.send({
-        message : 'Welcome To Unofficial Otakudesu Rest Api',
-        createdBy : 'KaedeNoKi Team ♥️'
+app.get('/',(req,res)=>{
+    res.status(200).json({
+        success: true,
+        message: 'Welcome To Unofficial Otakudesu Rest Api',
+        data: {
+            created_by: 'KaedeNoKi Team ♥️'
+        }
     })
 })
 app.use('/api',(req,res) =>{
-    res.send({
-        message:'check our github for more info',
-        github :'https://github.com/Kaede-No-Ki/otakudesu-rest-api'
+    res.status(200).json({
+        success: true,
+        message: 'check our github for more info',
+        data: {
+            github: 'https://github.com/Kaede-No-Ki/otakudesu-rest-api'
+        }
     })
 })
 
 
-app.use('*',(req,res) =>{
-    res.json({
-        'status':'not found path',
-        message: 'read the docs here https://github.com/Kaede-No-Ki/otakudesu-rest-api'
+app.use((req,res) =>{
+    res.status(404).json({
+        success: false,
+        message: 'Not found path, read the docs here https://github.com/Kaede-No-Ki/otakudesu-rest-api',
+        data: null
     })
 })
 app.listen(port, () => {
