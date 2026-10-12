@@ -191,17 +191,17 @@ exports.schedule = (req, res) => {
     let animeList = [];
     let scheduleList = [];
     let day;
-    let anime_name, link, id;
+    let title, link, id;
     element.find(".kglist321").each(function () {
       day = $(this).find("h2").text();
       animeList = [];
       $(this)
         .find("ul > li")
         .each(function () {
-          anime_name = $(this).find("a").text();
+          title = $(this).find("a").text();
           link = $(this).find("a").attr("href");
           id = link.replace(baseUrl + "anime/", "");
-          animeList.push({ anime_name, id, link });
+          animeList.push({ title, id, link });
         });
       scheduleList.push({ day, animeList });
     });
