@@ -41,13 +41,32 @@ git clone https://github.com/Kaede-No-Ki/otakudesu-rest-api.git
 ```bash
 npm install
 ```
-3. Start server
+3. Configure environment variables
+```bash
+cp .env.example .env
+# then edit .env and set PORT
+```
+4. Start server
 ```bash
 npm run start
 ```
 or
 ```bash
-npm run dev (you have to install nodemon on your computer)
+npm run dev
+```
+
+## Project Structure
+```
+server.js              # entrypoint: loads env, starts express
+src/
+  app.js                # express app wiring (middleware, routes, 404)
+  config/                # env loading, otakudesu source urls
+  routes/                # express routers, grouped by domain
+  controllers/            # thin HTTP handlers (request/response only)
+  services/
+    scrapers/             # cheerio HTML parsing per page type
+    episodeStream.service.js  # resolves episode stream/mirror embed urls
+  utils/                  # response envelope, error helpers, shared parsers
 ```
 
 ## API Documentation
