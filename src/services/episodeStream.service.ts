@@ -1,12 +1,14 @@
-const { default: Axios } = require("axios");
-const cheerio = require("cheerio");
-const { baseUrl } = require("../config/source");
+import Axios from "axios";
+import * as cheerio from "cheerio";
+import source from "../config/source";
+
+const { baseUrl } = source;
 
 const AJAX_URL = `${baseUrl}wp-admin/admin-ajax.php`;
 const NONCE_ACTION = "aa1208d27f29ca340c92c66d1926f13f";
 const MIRROR_ACTION = "2a3505c93b0035d3f455df82bf976b84";
 
-const get = async (url) => {
+export const get = async (url: string): Promise<string> => {
   try {
     const response = await Axios.get(url);
     const $ = cheerio.load(response.data);
@@ -14,8 +16,8 @@ const get = async (url) => {
     if (videoSourceUrl) {
       return videoSourceUrl;
     }
-    let source1 = $.html().search('"file":');
-    let source2 = $.html().search("'file':");
+    const source1 = $.html().search('"file":');
+    const source2 = $.html().search("'file':");
     const source3Url = $("#mediaplayer").attr("src");
     console.log(`source 1 ${source1}`);
     console.log(`source 2 ${source2}`);
@@ -39,7 +41,7 @@ const get = async (url) => {
   }
 };
 
-const alternateSource = async (url) => {
+const alternateSource = async (url: string): Promise<string> => {
   const response = await Axios.get(url);
   const $ = cheerio.load(response.data);
   const source3 = $.html().search('"play_url"');
@@ -51,7 +53,7 @@ const alternateSource = async (url) => {
   return "-";
 };
 
-const getAlternateStream = async (url) => {
+export const getAlternateStream = async (url: string): Promise<string> => {
   const response = await Axios.get(url);
   const $ = cheerio.load(response.data);
   const source = $("#mediaplayer").attr("src");
@@ -63,8 +65,13 @@ const getAlternateStream = async (url) => {
 // (e.g. {"id":206377,"i":0,"q":"480p"}) that must be exchanged for a nonce
 // and then posted back to WordPress' admin-ajax endpoint to receive a
 // base64 encoded iframe snippet containing the real embed url.
-const resolveMirror = async (dataContent) => {
+export const resolveMirror = async (
+  dataContent: string | undefined
+): Promise<string> => {
   try {
+    if (!dataContent) {
+      return "-";
+    }
     const decoded = JSON.parse(
       Buffer.from(dataContent, "base64").toString("utf-8")
     );
@@ -90,5 +97,3 @@ const resolveMirror = async (dataContent) => {
     return "-";
   }
 };
-
-module.exports = { get, getAlternateStream, resolveMirror };

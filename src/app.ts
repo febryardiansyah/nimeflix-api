@@ -1,18 +1,16 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const fileUpload = require("express-fileupload");
-const router = require("./routes");
-const notFound = require("./middlewares/notFound");
+import express, { Request, Response } from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import router from "./routes";
+import notFound from "./middlewares/notFound";
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(fileUpload({ createParentPath: true }));
 
-app.get("/", (req, res) => {
+app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     message: "Welcome To Unofficial Otakudesu Rest Api",
@@ -23,7 +21,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", router);
-app.use("/api", (req, res) => {
+app.use("/api", (_req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     message: "check our github for more info",
@@ -35,4 +33,4 @@ app.use("/api", (req, res) => {
 
 app.use(notFound);
 
-module.exports = app;
+export default app;

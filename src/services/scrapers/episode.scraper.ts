@@ -1,11 +1,15 @@
-const cheerio = require("cheerio");
-const { baseUrl } = require("../../config/source");
-const { parseQualityList, parseAltQualityList } = require("../../utils/qualityParser");
-const episodeStream = require("../episodeStream.service");
+import * as cheerio from "cheerio";
+import type { CheerioAPI } from "cheerio";
+import source from "../../config/source";
+import { parseQualityList, parseAltQualityList } from "../../utils/qualityParser";
+import * as episodeStream from "../episodeStream.service";
+import { DownloadList, EpisodeDetail, MirrorGroup, MirrorOption } from "../../types";
 
-const buildMirrorList = ($, selector) => {
-  const mirror_list = [];
-  $(selector).each((idx, el) => {
+const { baseUrl } = source;
+
+const buildMirrorList = ($: CheerioAPI, selector: string): MirrorOption[] => {
+  const mirror_list: MirrorOption[] = [];
+  $(selector).each((_idx, el) => {
     mirror_list.push({
       host: $(el).find("a").text().trim(),
       id: $(el).find("a").attr("data-content"),
@@ -14,7 +18,7 @@ const buildMirrorList = ($, selector) => {
   return mirror_list;
 };
 
-const parseDownloadList = (html) => {
+const parseDownloadList = (html: string): DownloadList => {
   const $ = cheerio.load(html);
   if ($(".download > ul > li").length === 0) {
     return {
@@ -30,24 +34,28 @@ const parseDownloadList = (html) => {
   };
 };
 
+type EpisodeMeta = Omit<EpisodeDetail, "link_stream" | "alternate_stream"> & {
+  streamLink: string | undefined;
+};
+
 // Parses everything on an episode page except the actual stream resolution,
 // which requires a follow-up network request handled by episodeStream.service.
-const parseEpisodeMeta = (html, fullUrl) => {
+const parseEpisodeMeta = (html: string, fullUrl: string): EpisodeMeta => {
   const $ = cheerio.load(html);
   const streamElement = $("#lightsVideo").find("#embed_holder");
-  const obj = {};
+  const obj = {} as EpisodeMeta;
 
   obj.id = fullUrl.replace(baseUrl, "");
   obj.title = $(".venutama > h1").text();
   obj.base_url = fullUrl;
   obj.is_first_episode = obj.id.split("-")[2] === "1";
 
-  const nextList = [];
+  const nextList: { title: string; id: string }[] = [];
   $("#venkonten > div.venser > div.venutama > div.prevnext > div.flir > a").each(
-    (idx, el) => {
+    (_idx, el) => {
       nextList.push({
         title: $(el).text().trim(),
-        id: $(el).attr("href").replace(`${baseUrl}episode/`, ""),
+        id: ($(el).attr("href") || "").replace(`${baseUrl}episode/`, ""),
       });
     }
   );
@@ -63,18 +71,19 @@ const parseEpisodeMeta = (html, fullUrl) => {
     { quality: "360p", mirror_list: buildMirrorList($, ".mirrorstream ul.m360p > li") },
     { quality: "480p", mirror_list: buildMirrorList($, ".mirrorstream ul.m480p > li") },
     { quality: "720p", mirror_list: buildMirrorList($, ".mirrorstream ul.m720p > li") },
-  ];
+  ] as MirrorGroup[];
 
   obj.download_list = parseDownloadList(html);
 
   return obj;
 };
 
-const parseEpisode = async (html, fullUrl) => {
+export const parseEpisode = async (
+  html: string,
+  fullUrl: string
+): Promise<EpisodeDetail> => {
   const { streamLink, ...obj } = parseEpisodeMeta(html, fullUrl);
-  obj.link_stream = await episodeStream.get(streamLink);
-  obj.alternate_stream = await episodeStream.getAlternateStream(streamLink);
-  return obj;
+  const link_stream = await episodeStream.get(streamLink as string);
+  const alternate_stream = await episodeStream.getAlternateStream(streamLink as string);
+  return { ...obj, link_stream, alternate_stream };
 };
-
-module.exports = { parseEpisode };

@@ -1,6 +1,6 @@
 // Cover images used for the /genres list, indexed positionally to line up
 // with the order genres are scraped from the genre list page.
-exports.ImageList = [
+export const ImageList: string[] = [
   "https://cdn.myanimelist.net/images/anime/1223/96541.webp",
   "https://cdn.myanimelist.net/images/anime/13/17405.webp",
   "https://cdn.myanimelist.net/images/anime/8/77831.webp",

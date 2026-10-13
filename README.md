@@ -48,26 +48,30 @@ cp .env.example .env
 ```
 4. Start server
 ```bash
-npm run start
+npm run start   # builds (prestart) then runs the compiled dist/server.js
 ```
-or
+or, for development with auto-reload on change:
 ```bash
-npm run dev
+npm run dev      # runs TypeScript directly via tsx, no build step needed
 ```
 
 ## Project Structure
 ```
-server.js              # entrypoint: loads env, starts express
+server.ts               # entrypoint: loads env, starts express
 src/
-  app.js                # express app wiring (middleware, routes, 404)
+  app.ts                 # express app wiring (middleware, routes, 404)
   config/                # env loading, otakudesu source urls
   routes/                # express routers, grouped by domain
   controllers/            # thin HTTP handlers (request/response only)
   services/
     scrapers/             # cheerio HTML parsing per page type
-    episodeStream.service.js  # resolves episode stream/mirror embed urls
+    episodeStream.service.ts  # resolves episode stream/mirror embed urls
+  types/                  # shared domain interfaces (AnimeDetail, EpisodeDetail, etc.)
   utils/                  # response envelope, error helpers, shared parsers
+dist/                    # compiled JS output (npm run build), gitignored
 ```
+
+This project is written in TypeScript (`strict` mode). Run `npm run build` to type-check and compile to `dist/`, or `npx tsc --noEmit` to only type-check without emitting files.
 
 ## API Documentation
 __Api Path__ : https://otakudesu-api.herokuapp.com/api/</br>

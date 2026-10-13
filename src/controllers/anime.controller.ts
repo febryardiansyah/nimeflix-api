@@ -1,13 +1,16 @@
-const { default: Axios } = require("axios");
-const { baseUrl } = require("../config/source");
-const errors = require("../utils/httpError");
-const response = require("../utils/response");
-const episodeStream = require("../services/episodeStream.service");
-const { parseAnimeDetail } = require("../services/scrapers/animeDetail.scraper");
-const { parseBatch } = require("../services/scrapers/batch.scraper");
-const { parseEpisode } = require("../services/scrapers/episode.scraper");
+import { Request, Response } from "express";
+import Axios from "axios";
+import source from "../config/source";
+import * as errors from "../utils/httpError";
+import * as response from "../utils/response";
+import * as episodeStream from "../services/episodeStream.service";
+import { parseAnimeDetail } from "../services/scrapers/animeDetail.scraper";
+import { parseBatch } from "../services/scrapers/batch.scraper";
+import { parseEpisode } from "../services/scrapers/episode.scraper";
 
-exports.detailAnime = async (req, res) => {
+const { baseUrl } = source;
+
+export const detailAnime = async (req: Request, res: Response): Promise<void> => {
   const id = req.params.id;
   const fullUrl = baseUrl + `anime/${id}`;
   try {
@@ -20,7 +23,7 @@ exports.detailAnime = async (req, res) => {
   }
 };
 
-exports.batchAnime = async (req, res) => {
+export const batchAnime = async (req: Request, res: Response): Promise<void> => {
   const id = req.params.id;
   const fullUrl = `${baseUrl}batch/${id}`;
   try {
@@ -31,7 +34,7 @@ exports.batchAnime = async (req, res) => {
   }
 };
 
-exports.epsAnime = async (req, res) => {
+export const epsAnime = async (req: Request, res: Response): Promise<void> => {
   const id = req.params.id;
   const fullUrl = `${baseUrl}episode/${id}`;
   try {
@@ -44,7 +47,7 @@ exports.epsAnime = async (req, res) => {
   }
 };
 
-exports.epsMirror = async (req, res) => {
+export const epsMirror = async (req: Request, res: Response): Promise<void> => {
   // mirrorId is the base64 `data-content` payload captured from the
   // episode's mirror list (see exports.epsAnime).
   const mirrorId = req.body.mirrorId;

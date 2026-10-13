@@ -1,13 +1,18 @@
-const cheerio = require("cheerio");
+import * as cheerio from "cheerio";
+import { QualityDownload, DownloadLink } from "../types";
 
 // Used by both the batch page (`.download2 .batchlink`) and the normal
 // episode download section (`.download`): each quality tier is rendered as
 // `<ul><li><strong>quality</strong><i>size</i><a>host</a>...</li></ul>`.
-const parseQualityList = (html, containerSelector, num) => {
+export const parseQualityList = (
+  html: string,
+  containerSelector: string,
+  num: number
+): QualityDownload | undefined => {
   const $ = cheerio.load(html);
   const element = $(containerSelector);
-  const download_links = [];
-  let result;
+  const download_links: DownloadLink[] = [];
+  let result: QualityDownload | undefined;
 
   element.find("ul").filter(function () {
     const quality = $(this).find("li").eq(num).find("strong").text();
@@ -23,6 +28,7 @@ const parseQualityList = (html, containerSelector, num) => {
         });
         result = { quality, size, download_links };
       });
+    return true;
   });
   return result;
 };
@@ -31,11 +37,14 @@ const parseQualityList = (html, containerSelector, num) => {
 // renders as `.anime-box`/`.anime-title` (or `.yondarkness-box` for some
 // mirrors) instead of the usual `ul > li` structure, encoding
 // `[quality][size]` inside the title text itself.
-const parseAltQualityList = (html, num) => {
+export const parseAltQualityList = (
+  html: string,
+  num: number
+): QualityDownload | undefined => {
   const $ = cheerio.load(html);
-  const download_links = [];
+  const download_links: DownloadLink[] = [];
   const element = $(".download");
-  let result;
+  let result: QualityDownload | undefined;
 
   element.filter(function () {
     const isYondarkness =
@@ -63,16 +72,16 @@ const parseAltQualityList = (html, num) => {
           .find(itemSelector)
           .eq(num)
           .find("a")
-          .each((idx, el) => {
+          .each((_idx, el) => {
             download_links.push({
               host: $(el).text(),
               link: $(el).attr("href"),
             });
             result = { quality, size, download_links };
           });
+        return true;
       });
+    return true;
   });
   return result;
 };
-
-module.exports = { parseQualityList, parseAltQualityList };

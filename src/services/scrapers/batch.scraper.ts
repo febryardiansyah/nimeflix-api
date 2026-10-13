@@ -1,7 +1,8 @@
-const cheerio = require("cheerio");
-const { parseQualityList } = require("../../utils/qualityParser");
+import * as cheerio from "cheerio";
+import { parseQualityList } from "../../utils/qualityParser";
+import { BatchDetail } from "../../types";
 
-const parseBatch = (html, fullUrl) => {
+export const parseBatch = (html: string, fullUrl: string): BatchDetail => {
   const $ = cheerio.load(html);
   const title = $(".batchlink > h4").text();
   const selector = ".download2 .batchlink";
@@ -16,5 +17,3 @@ const parseBatch = (html, fullUrl) => {
     download_list: { low_quality, medium_quality, high_quality },
   };
 };
-
-module.exports = { parseBatch };

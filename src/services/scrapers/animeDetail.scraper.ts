@@ -1,14 +1,16 @@
-const cheerio = require("cheerio");
-const { baseUrl } = require("../../config/source");
+import * as cheerio from "cheerio";
+import source from "../../config/source";
+import { AnimeDetail, EpisodeListItem, GenreRef } from "../../types";
 
-const parseAnimeDetail = (html, animeId) => {
+const { baseUrl } = source;
+
+export const parseAnimeDetail = (html: string, animeId: string): AnimeDetail => {
   const $ = cheerio.load(html);
   const detailElement = $(".venser").find(".fotoanime");
-  const object = {};
-  const episode_list = [];
-  const genreList = [];
+  const object = { anime_id: animeId } as AnimeDetail;
+  const episode_list: EpisodeListItem[] = [];
+  const genreList: GenreRef[] = [];
 
-  object.anime_id = animeId;
   object.thumb = detailElement.find("img").attr("src");
 
   object.synopsis = $("#venkonten > div.venser > div.fotoanime > div.sinopc")
@@ -67,18 +69,17 @@ const parseAnimeDetail = (html, animeId) => {
       .find("span > a")
       .each(function () {
         const genre_name = $(this).text();
-        const genre_id = $(this).attr("href").replace(`${baseUrl}genres/`, "");
-        const genre_link = $(this).attr("href");
+        const genre_id = ($(this).attr("href") || "").replace(`${baseUrl}genres/`, "");
+        const genre_link = $(this).attr("href") || "";
         genreList.push({ genre_id, genre_name, genre_link });
       });
     object.genre_list = genreList;
+    return true;
   });
 
-  $("#venkonten > div.venser > div:nth-child(8) > ul > li").each((i, element) => {
+  $("#venkonten > div.venser > div:nth-child(8) > ul > li").each((_i, element) => {
     episode_list.push({
-      id: $(element)
-        .find("span > a")
-        .attr("href")
+      id: ($(element).find("span > a").attr("href") || "")
         .replace(`${baseUrl}episode/`, "")
         .trim(),
       title: $(element).find("span > a").text().trim(),
@@ -91,18 +92,16 @@ const parseAnimeDetail = (html, animeId) => {
   const hasBatch = $("div.venser > div:nth-child(6) > ul").text().length !== 0;
   object.batch_link = {
     id: hasBatch
-      ? $("div.venser > div:nth-child(6) > ul > li > span:nth-child(1) > a")
-          .attr("href")
-          .replace(`${baseUrl}batch/`, "")
+      ? ($("div.venser > div:nth-child(6) > ul > li > span:nth-child(1) > a").attr(
+          "href"
+        ) || "").replace(`${baseUrl}batch/`, "")
       : null,
     link: hasBatch
       ? $("div.venser > div:nth-child(6) > ul > li > span:nth-child(1) > a").attr(
           "href"
-        )
+        ) || null
       : null,
   };
 
   return object;
 };
-
-module.exports = { parseAnimeDetail };

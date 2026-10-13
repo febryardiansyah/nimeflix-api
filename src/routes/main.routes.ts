@@ -1,6 +1,7 @@
-const express = require("express");
-const router = express.Router();
-const MainController = require("../controllers/main.controller");
+import { Router } from "express";
+import * as MainController from "../controllers/main.controller";
+
+const router = Router();
 
 router.get("/home", MainController.home);
 router.get("/complete", MainController.completeAnimeList);
@@ -11,4 +12,4 @@ router.get("/genres", MainController.genre);
 router.get("/genres/:id/page/:pageNumber", MainController.animeByGenre);
 router.get("/search/:query", MainController.search);
 
-module.exports = router;
+export default router;

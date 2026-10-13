@@ -1,14 +1,17 @@
-const cheerio = require("cheerio");
-const { baseUrl } = require("../../config/source");
-const { ImageList } = require("../../utils/genreImages");
+import * as cheerio from "cheerio";
+import source from "../../config/source";
+import { ImageList } from "../../utils/genreImages";
+import { AnimeByGenreItem, GenreListItem, GenreRef } from "../../types";
 
-const parseGenreList = (html) => {
+const { baseUrl } = source;
+
+export const parseGenreList = (html: string): { genre_list: GenreListItem[] } => {
   const $ = cheerio.load(html);
   const element = $(".genres");
-  const genre_list = [];
+  const genre_list: GenreListItem[] = [];
 
   element.find("li > a").each(function (i, el) {
-    const id = $(el).attr("href").replace("/genres/", "");
+    const id = ($(el).attr("href") || "").replace("/genres/", "");
     genre_list.push({
       id,
       genre_name: $(el).text(),
@@ -20,31 +23,33 @@ const parseGenreList = (html) => {
   return { genre_list };
 };
 
-const parseAnimeByGenre = (html) => {
+export const parseAnimeByGenre = (
+  html: string
+): { anime_list: AnimeByGenreItem[] } => {
   const $ = cheerio.load(html);
   const element = $(".page");
-  const anime_list = [];
+  const anime_list: AnimeByGenreItem[] = [];
 
   element.find(".col-md-4").each(function () {
-    const object = {};
-    object.id = $(this)
-      .find(".col-anime-title > a")
-      .attr("href")
-      .replace(`${baseUrl}anime/`, "");
+    const object = {} as AnimeByGenreItem;
+    object.id = ($(this).find(".col-anime-title > a").attr("href") || "").replace(
+      `${baseUrl}anime/`,
+      ""
+    );
     object.anime_name = $(this).find(".col-anime-title").text();
     object.thumb = $(this).find("div.col-anime-cover > img").attr("src");
-    object.link = $(this).find(".col-anime-title > a").attr("href");
+    object.link = $(this).find(".col-anime-title > a").attr("href") || "";
     object.studio = $(this).find(".col-anime-studio").text();
     object.episode = $(this).find(".col-anime-eps").text();
     object.score = parseFloat($(this).find(".col-anime-rating").text());
     object.release_date = $(this).find(".col-anime-date").text();
 
-    const genre_list = [];
+    const genre_list: GenreRef[] = [];
     $(this)
       .find(".col-anime-genre > a")
       .each(function () {
         const genre_name = $(this).text();
-        const genre_link = $(this).attr("href");
+        const genre_link = $(this).attr("href") || "";
         const genre_id = genre_link.replace(`${baseUrl}genres/`, "");
         genre_list.push({ genre_id, genre_name, genre_link });
       });
@@ -55,5 +60,3 @@ const parseAnimeByGenre = (html) => {
 
   return { anime_list };
 };
-
-module.exports = { parseGenreList, parseAnimeByGenre };
